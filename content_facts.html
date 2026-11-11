@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Content Facts Reels - Mindful Feed</title>
+    <title>Content Facts · Brainrot Nutrition</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
@@ -134,8 +134,9 @@
                 </span>
             </div>
 
-            <a href="attention_nutrition.html" style="pointer-events:auto;background:#ffffff;color:#193e2c;border-radius:999px;padding:9px 12px;font-weight:800;font-size:11px;text-decoration:none">Daily report ↗</a>
+            <a href="attention_nutrition.html?presenter=1" style="pointer-events:auto;background:#ffffff;color:#193e2c;border-radius:999px;padding:9px 12px;font-weight:800;font-size:11px;text-decoration:none">Daily report ↗</a>
                  <span id="logging-indicator" class="pointer-events-none bg-green-800/80 text-white rounded-full px-2 py-1 text-[10px]">● Ready</span>
+                  <button id="next-reel-top" class="pointer-events-auto bg-white/20 border border-white/30 text-white text-xs font-bold px-3 py-2 rounded-full">Next ↑</button>
                   <!-- Sound Toggle Button -->
             <button id="sound-toggle-btn" class="pointer-events-auto bg-black/50 backdrop-blur-md hover:bg-black/80 text-white p-2.5 rounded-full border border-white/20 active:scale-90 transition-transform">
                 <svg id="icon-muted" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2"></path></svg>
@@ -286,7 +287,7 @@
 
                 <!-- SWIPE / ADVANCE PROMPT -->
                 <button id="swipe-prompt" class="absolute bottom-6 left-1/2 -translate-x-1/2 z-40 flex items-center gap-2 bg-white/20 backdrop-blur-lg border border-white/30 text-white px-5 py-2.5 rounded-full opacity-0 pointer-events-none transition-all duration-500 shadow-2xl cursor-pointer active:scale-95">
-                    <span class="font-bold text-xs uppercase tracking-wider">Tap or Swipe Up For Next Reel</span>
+                    <span class="font-bold text-xs uppercase tracking-wider">Next Reel ↑</span>
                     <svg class="w-4 h-4 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 10l7-7m0 0l7 7m-7-7v18"></path></svg>
                 </button>
 
@@ -490,6 +491,8 @@
         }
 
         // --- CORE LOAD & LOCK LOGIC ---
+        const FEED_SEQUENCE=[...BRAINROT_REELS.map(reel=>({reel,category:"brainrot"})),...EDUCATIONAL_REELS.map(reel=>({reel,category:"educational"}))];
+        let reelIndex=0;
         function loadNextReel() {
             flushAttentionSession(true);
             state.isLocked = true;
@@ -505,19 +508,14 @@
             bottomInfo.classList.remove('opacity-100');
             bottomInfo.classList.add('opacity-30');
 
-            swipePrompt.classList.remove('opacity-100');
-            swipePrompt.classList.add('opacity-0', 'pointer-events-none');
+            swipePrompt.classList.add('opacity-100');
+            swipePrompt.classList.remove('opacity-0', 'pointer-events-none');
 
-            // Determine Video Category
-            if (state.forcedEduCount > 0) {
-                state.currentCategory = 'educational';
-            } else {
-                state.currentCategory = Math.random() > 0.4 ? 'brainrot' : 'educational';
-            }
-
-            // Pick Video Payload
-            const pool = state.currentCategory === 'brainrot' ? BRAINROT_REELS : EDUCATIONAL_REELS;
-            const reel = pool[Math.floor(Math.random() * pool.length)];
+            // Move through the complete eight-reel catalog before repeating.
+            const item=FEED_SEQUENCE[reelIndex % FEED_SEQUENCE.length];
+            reelIndex++;
+            state.currentCategory=item.category;
+            const reel=item.reel;
             state.currentReelData = reel;
 
             // Update Header & Badge UI
@@ -638,12 +636,7 @@
                 if (state.forcedEduCount > 0) state.forcedEduCount--;
             }
 
-            // Check 3-Strike Rule Intervention
-            if (state.brainrotStreak >= 3) {
-                interventionModal.classList.remove('hidden');
-            } else {
-                unlockAndPlay();
-            }
+            unlockAndPlay();
         });
 
         // 2. Detox Modal Accept Button
@@ -674,7 +667,7 @@
 
         // 5. Swipe Up Navigation Logic
         function advanceToNextReel() {
-            if (state.isLocked && interventionModal.classList.contains('hidden')) return;
+            if (!interventionModal.classList.contains('hidden')) return;
 
             reelContainer.classList.add('slide-up-out');
 
@@ -697,6 +690,7 @@
 
         // Tap on Swipe Prompt
         swipePrompt.addEventListener('click', advanceToNextReel);
+        document.getElementById('next-reel-top').addEventListener('click', advanceToNextReel);
 
         // Touch Swipe Event Handling
         let startY = 0;
@@ -719,7 +713,7 @@
 
         // Desktop Mouse Wheel Scroll Support
         window.addEventListener('wheel', (e) => {
-            if (e.deltaY > 40 && !state.isLocked) {
+            if (e.deltaY > 40) {
                 advanceToNextReel();
             }
         });
