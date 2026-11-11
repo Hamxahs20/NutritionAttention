@@ -1,5 +1,13 @@
-ATTENTION NUTRITION LIVE DEMO
+ATTENTION NUTRITION — PRESENTER DEMO
 
-Upload all three HTML files to the same GitHub Pages repository root. Set GitHub Pages to Deploy from a branch, main, / (root). Open the GitHub Pages URL to start watching Content Facts. Tap Daily report to see the Attention Nutrition dashboard. Watch at least 1 second of a video. Data is local to the browser and device, not synchronized across devices. The content scores are illustrative demo estimates. The report checks for updates every 1.5 seconds; open both pages in separate tabs to see updates. Do not open files directly using file:// URLs.
+1. Upload index.html, content_facts.html, attention_nutrition.html together to GitHub Pages (same directory).
+2. Open index.html in Chrome on the presenting computer.
+3. Open the video feed in one window and the presenter dashboard in a second window (same Chrome profile, same domain).
+4. Move dashboard to external monitor/projector and press Full screen.
+5. Click View Content and watch at least one second, then swipe. The dashboard updates roughly every 1.5 seconds, including during playback.
+6. Clear demo on the dashboard before presenting if you want to start at zero.
 
-For a live demo with two devices, use screen mirroring of one device, or add a backend and authentication later.
+IMPORTANT: Browser localStorage is per origin and browser profile. Different devices do NOT synchronize; for two physical devices, use screen mirroring or a real backend.
+All Content Facts scores are illustrative estimates, not scientific measurements. The catalog uses sample videos; descriptions and ratings are not measured from the actual MP4 files.
+
+FIX: viewing time now records unlocked feed exposure even if the sample video fails to play. This is a demo timer, not verified video playback duration.
